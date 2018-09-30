@@ -1,0 +1,168 @@
+<div id="toolbar">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="adds()">新增</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deletes()">删除</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="updates()">修改</a>
+</div>
+<table id="tt" class="easyui-datagrid" style="width:auto;height:auto;"
+       url="badlist/4/getbadlist"
+       title="破损管理" iconCls="icon-save"
+       rownumbers="true" pagination="true"
+       idField="bid" pagination="true"
+       iconCls="icon-save">
+    <thead>
+    <tr>
+        <th class="bids" data-options="field:'bid',checkbox:true"></th>
+        <th field="bname" width="260" align="center">物品名</th>
+        <th field="btime" width="360" align="center">登记时间</th>
+        <th field="bdetail" width="560" align="center">损坏原因</th>
+        <th field="bnumber" width="480" align="center">损坏数量</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="dlg41" class="easyui-panel" title="添加物品" data-options="iconCls:'icon-save',closable:true" style="width:400px;height:500px;padding:20px;">
+    <form id="ff" method="post">
+        <div style="margin-bottom:20px">
+            <div>物品名:</div>
+            <input class="easyui-textbox" name="bnames" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>物品数量:</div>
+            <input class="easyui-textbox" name="bnumbers" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>损坏描述:</div>
+            <input class="easyui-textbox" name="bdetails" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>登记日期:</div>
+            <input class="easyui-datebox"  name="btimes" required data-options=""/>
+        </div>
+        <div>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addlist()" style="width:100%;height:32px">添加物品</a>
+        </div>
+    </form>
+</div>
+
+
+<div id="dlg42" class="easyui-panel" title="修改物品" data-options="iconCls:'icon-save',closable:true" style="width:400px;height:500px;padding:20px;">
+    <form id="ff2" method="post">
+        <div style="margin-bottom:20px">
+            <input type="hidden" id="bid" style="width:100%;height:32px">
+            <div>物品名:</div>
+            <input class="easyui-textbox" id="bname" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>物品数量:</div>
+            <input class="easyui-textbox" id="bnumber" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>损坏描述:</div>
+            <input class="easyui-textbox" id="bdetail" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>登记日期:</div>
+            <input class="easyui-datebox" id="btime" required/>
+        </div>
+        <div>
+            <a href="#" class="easyui-linkbutton" onclick="uplist()" iconCls="icon-ok" style="width:100%;height:32px">修改物品</a>
+        </div>
+    </form>
+</div>
+
+<script type="application/javascript">
+    $(function(){
+        $("#dlg41").panel({
+            closed:true,
+        });
+        $("#dlg42").panel({
+            closed:true,
+        })
+    });
+
+    function adds(){
+        $('#dlg41').panel('open');
+    }
+    function addlist(){
+        var bnames = $("[name='bnames']").val();
+        var bnumbers = $("[name='bnumbers']").val();
+        var bdetails= $("[name='bdetails']").val();
+        var btimes = $("[name='btimes']").val();
+        var btypes = 4;
+        $.ajax({
+            type: 'POST',
+            async: false,
+            dataType: "json",
+            data: {"bname":bnames,"bnumber":bnumbers,"bdetail":bdetails,"btime":btimes,"btype":btypes},
+            url: 'badlist/addbadlist',
+            success: function (data) {
+                $("#dlg41").panel('close');
+            }
+        });
+    }
+    function updates(){
+        var items = $('#tt').datagrid('getSelections');
+        var ids = [];
+        $(items).each(function(){
+            ids.push(this.bid);
+        });
+
+        $.ajax({
+            type: 'Get',
+            async: false,
+            dataType: "json",
+            url: 'badlist/' + ids + '/getbad',
+            success: function (data) {
+                $('#dlg42').panel('open');
+                $("#bid").val(data.bid);
+                $("#bname").textbox('setValue',data.bname);
+                $("#bnumber").textbox('setValue',data.bnumber);
+                $("#bdetail").textbox('setValue',data.bdetail);
+                $("#btime").textbox('setValue',data.btime);
+            }
+        });
+
+    }
+    function uplist(){
+
+        var bid = $("#bid").val();
+        var bname =$("#bname").textbox('getValue');
+        var bnumber = $("#bnumber").textbox('getValue');
+        var bdetail= $("#bdetail").textbox('getValue');
+        var btime = $("#btime").textbox('getValue');
+        var btype = 4;
+        $.ajax({
+            type: 'POST',
+            async: false,
+            dataType: "json",
+            data: {"bid":bid,"bname":bname,"bnumber":bnumber,"bdetail":bdetail,"btime":btime,"btype":btype},
+            url: 'badlist/updatebadlist',
+            success: function (data) {
+                if(data=="success"){
+                    alert("成功");
+                }else{
+                    alert("失败");
+                }
+            }
+        });
+    }
+
+    function deletes(){
+        var it = $('#tt').datagrid('getSelections');
+        var its = [];
+        $(it).each(function(){
+            its.push(this.bid);
+        });
+        alert(its);
+        $.ajax({
+            type: 'Get',
+            async: false,
+            dataType: "json",
+            url: 'badlist/' + its + '/removebad',
+            success: function (data) {
+
+            }
+        });
+
+    }
+</script>

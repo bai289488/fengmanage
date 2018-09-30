@@ -1,0 +1,178 @@
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" >
+    <title>物品管理系统</title>
+    <link rel="stylesheet" type="text/css" th:href=" @{/themes/default/easyui.css}">
+    <link rel="stylesheet" type="text/css" th:href=" @{/themes/icon.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/themes/color.css}">
+    <script type="text/javascript" src="/jquery.min.js"></script>
+    <script type="text/javascript" src="/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<style>
+    body{padding:0;margin:0}
+</style>
+<script type="text/javascript">
+    $(document).ready(function(){                            //页面加载完成控制高度
+        var height1 = $(window).height()-20;
+        $("#main_layout").attr("style","width:100%;height:"+height1+"px");
+        $("#main_layout").layout("resize",{
+            width:"100%",
+            height:height1+"px"
+        });
+        var type = '';
+        $.ajax({
+            type: 'Get',
+            async: false,
+            dataType: "json",
+            url: 'classfiy/0/getClassList',//获取菜单
+            success: function (data) {
+                $.each(data, function (i, n) { //加载父类节点即一级菜单
+                    var id = n.classfiyId;
+                    var title = n.className;
+                    if (i == 0) { //显示第一个一级菜单下的二级菜单
+                        $('#layout_west_accordion').accordion('add', {
+                            title: title,
+                            iconCls: n.iconCls,
+                            selected: true,
+                            //可在这加HTML代码，改变布局
+                            content: '<div style="padding:10px 0px"><ul id="tree' + id + '"></ul></div>',
+                        });
+                    } else {
+                        $('#layout_west_accordion').accordion('add', {
+                            title: title,
+                            iconCls: n.iconCls,
+                            selected: false,
+                            content: '<div style="padding:10px 0px"><ul id="tree' + id + '"></ul></div>',
+                        });
+                    }
+
+                $.ajax({
+                    type: 'Get',
+                    async: false,
+                    dataType: "json",
+                    url: 'classfiy/' + id + '/getClassList',
+                    success: function (data) {
+                        $("#tree" + id).tree({
+                            data: data,
+                            animate: true,
+                            //iconCls: icon-blank,
+                            //在树节点加图片
+                            formatter: function (node) {
+                                return node.className;
+                            },
+                            //lines: true, //显示虚线效果
+                            onClick: function (node) { // 在用户点击一个子节点即二级菜单时触发addTab()方法,用于添加tabs
+                                //if(node.url){//判断url是否存在，存在则创建tabs
+                                addTab(node);
+                            }
+
+                        });
+                    }
+
+                });
+            });
+    }
+    });
+    });
+
+    $('#tTabs').tabs({
+        border: false,
+        onSelect: function(title) {
+        }
+    });
+    // add a new tab panel
+
+    function addTab(node) {
+        //var t=$.trim(t);
+        var tabExitOrNot = $('#tTabs').tabs('exists', node.className);//判断此选项卡是否已存在
+        if(tabExitOrNot == true) {
+            $('#tTabs').tabs('select', node.className);
+            return;
+        }
+        type=node.classDetail;
+        //添加选项卡
+        $('#tTabs').tabs('add', {
+            title: node.className,
+            href: node.classDetail,
+      //      content: '<iframe scrolling="no" frameborder="0"  src="'+node.classDetail+'" style="width:100%;height:100%;"></iframe>',
+            closable: true,
+            tools:[{
+                handler:function(){
+
+                }
+            }]
+
+        });
+
+    }
+
+
+
+
+
+
+    $(window).resize(function(){  //窗口大小改变时控制高度
+        var height1 = $(window).height()-30;
+        $("#main_layout").attr("style","width:100%;height:"+height1+"px");
+        $("#main_layout").layout("resize",{
+            width:"100%",
+            height:height1+"px"
+        });
+    })
+
+
+
+</script>
+</head>
+<body>
+<div style="margin-top:5px;margin-left:5px;margin-right:5px;margin-bottom:5px;">
+    <div id="main_layout" class="easyui-layout"  style="width:100%; height:680px;">
+
+        <!-- 上方 -->
+        <div data-options="region:'north'" style="height: 80px;background-color:#95B8E7;">
+           <span style="margin-left:0.5%;">
+               <font size="3" style="line-height: 2.0em;" color="white" >
+                   <b>仓库管理系统 </b>
+               </font>
+           </span>
+
+            <span style="float:right;margin-top:10px;margin-right:20px;">
+               <font size="3" color="white" th:text='${username}'></font>
+               <a href="loginOut" > <font size="3" color="red">退出</font> </a>
+           </span>
+        </div>
+
+        <!-- 左边 -->
+        <div data-options="region:'west',split:true" title="管理列表" style="width: 200px;">
+            <div id="layout_west_accordion" class="easyui-accordion"  data-options="fit:true,border:false">
+                <!--<div title="Title1" style="padding:10px;">-->
+                    <!--content1-->
+                <!--</div>-->
+                <!--<div title="Title2" data-options="selected:true" style="padding:10px;">-->
+                    <!--content2-->
+                <!--</div>-->
+                <!--<div title="Title3" style="padding:10px">-->
+                    <!--content3-->
+                <!--</div>-->
+            </div>
+        </div>
+        <!-- 中间 -->
+        <div data-options="region:'center',title:'操作页面'">
+            <div id="tTabs" class="easyui-tabs" data-options="fit:true,border:false,plain:true">
+                <!--<div title="DDDDD"-->
+                     <!--data-options="closable:true"-->
+                     <!--style="overflow: auto; padding: 20px;">-->
+                <!--</div>-->
+            </div>
+        </div>
+        <!-- 下方 -->
+        <div data-options="region:'south',split:true" style="height:5%;background-color:#95B8E7;">
+            <div style="" align="center">
+                <font size="" color="white">仓库管理系统 © 版权所有 </font>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

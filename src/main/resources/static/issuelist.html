@@ -1,0 +1,248 @@
+<div id="toolbar">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="adds()">新增</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deletes()">删除</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="updates()">修改</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="selectes()">查看</a>
+</div>
+<table id="tt" class="easyui-datagrid" style="width:auto;height:auto;"
+       url="issuelist/getLists"
+       title="出单管理" iconCls="icon-save"
+       rownumbers="true" pagination="true"
+       idField="iid" pagination="true"
+       iconCls="icon-save">
+    <thead>
+    <tr>
+        <th class="iids" data-options="field:'pid',checkbox:true"></th>
+        <th field="iname" width="260" align="center">出单者</th>
+        <th field="idetail" width="360" align="center">出单信息</th>
+        <th field="itime" width="560" align="center">出单时间</th>
+        <th field="imoney" width="480" align="center">出单花销</th>
+    </tr>
+    </thead>
+</table>
+
+<div id="dlg71" class="easyui-panel" title="添加出单" data-options="iconCls:'icon-save',closable:true" style="width:400px;height:500px;padding:20px;">
+    <form id="ff" method="post">
+        <div style="margin-bottom:20px">
+            <div>出单名:</div>
+            <input class="easyui-textbox" name="pname" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>出单收费:</div>
+            <input class="easyui-textbox" name="pmoney" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>出单数量:</div>
+            <input class="easyui-textbox" id="pnu" style="width:20%;height:32px">
+            <div>物品单价:</div>
+            <input class="easyui-textbox" id="pmo" style="width:20%;height:32px">
+            <div>出单类型:</div>
+            <select id="pty" class="easyui-combobox"  style="width:20%;">
+                <option value="1">桌子</option>
+                <option value="2">椅子</option>
+                <option value="3">盘子</option>
+                <option value="4">碟子</option>
+                <option value="5">筷子</option>
+                <option value="6">其他杂物</option>
+            </select>
+            <div>物品名:</div>
+            <input class="easyui-textbox" id="pna" style="width:30%;height:32px">
+            <div>来源:</div>
+            <input class="easyui-textbox" id="pfr" style="width:30%;height:32px">
+            <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="inserts()">确定</a>
+        </div>
+        <div style="margin-bottom:20px">
+            <div>出单清单:</div>
+            <textarea rows=5 name="pdetail" class="textarea easyui-validatebox" style="width:100%;height:96px"></textarea>
+        </div>
+        <div style="margin-bottom:20px">
+            <div>出单日期:</div>
+            <input class="easyui-datebox"  name="pdate" required data-options=""/>
+        </div>
+        <div>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="addlist()" style="width:100%;height:32px">添加物品</a>
+        </div>
+    </form>
+</div>
+
+
+<div id="dlg72" class="easyui-panel" title="修改物品" data-options="iconCls:'icon-save',closable:true" style="width:400px;height:500px;padding:20px;">
+    <form id="ff2" method="post">
+        <div style="margin-bottom:20px">
+            <input type="hidden" id="bid" style="width:100%;height:32px">
+            <div>物品名:</div>
+            <input class="easyui-textbox" id="bname" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>物品数量:</div>
+            <input class="easyui-textbox" id="bnumber" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>出单描述:</div>
+            <input class="easyui-textbox" id="bdetail" style="width:100%;height:32px">
+        </div>
+        <div style="margin-bottom:20px">
+            <div>登记日期:</div>
+            <input class="easyui-datebox" id="btime" />
+        </div>
+        <div>
+            <a href="#" class="easyui-linkbutton" onclick="uplist()" iconCls="icon-ok" style="width:100%;height:32px">修改物品</a>
+        </div>
+    </form>
+</div>
+
+<div id="dlg73" class="easyui-panel" title="查看采购信息" data-options="iconCls:'icon-save',closable:true" style="width:400px;height:300px;padding:20px;">
+    <table id="td" style="width:auto;height:auto;">
+
+    </table>
+</div>
+
+<script type="application/javascript">
+    $(function(){
+        $("#dlg71").panel({
+            closed:true,
+        });
+        $("#dlg72").panel({
+            closed:true,
+        });
+        $("#dlg73").panel({
+            closed:true,
+        });
+
+    });
+
+    function adds(){
+        $('#dlg71').panel('open');
+    }
+    function inserts(){
+        var pnu = $("#pnu").val();
+        var pty = $("#pty  option:selected").val();
+        var pna = $("#pna").val();
+        var pmo = $("#pmo").val();
+        var pfr = $("#pfr").val();
+        var pp = $("[name='pdetail']").val();
+        var result = pnu+'-'+pty+'-'+pna+'-'+pmo+'-'+pfr+',';
+        if(pnu==''||pty==''||pna==''){
+            $("[name='pdetail']").val('');
+        }else{
+            $("[name='pdetail']").val(pp+result);
+            $("#pnu").textbox('setValue','');
+            $("#pna").textbox('setValue','');
+            $("#pmo").textbox('setValue','');
+            $("#pfr").textbox('setValue','');
+        }
+    }
+
+    function addlist(){
+        var iname = $("[name='pname']").val();
+        var imoney = $("[name='pmoney']").val();
+        var idetail= $("[name='pdetail']").val();
+        var itime = $("[name='pdate']").val();
+        $.ajax({
+            type: 'POST',
+            async: false,
+            dataType: "json",
+            data: {"iname":iname,"idetail":idetail,"itime":itime,"imoney":imoney},
+            url: 'issuelist/insertList',
+            success: function (data) {
+                alert("success");
+            }
+        });
+    }
+    function updates(){
+        var ss = $('#tt').datagrid('getSelections');
+        var ii = [];
+        $(ss).each(function(){
+            ii.push(this.pid);
+        });
+        $.ajax({
+            type: 'Get',
+            async: false,
+            dataType: "json",
+            url: 'badlist/' + ids + '/getbad',
+            success: function (data) {
+                $('#dlg72').panel('open');
+                $("#bid").val(data.pid);
+                $("#bname").textbox('setValue',data.pname);
+                $("#bnumber").textbox('setValue',data.bnumber);
+                $("#bdetail").textbox('setValue',data.bdetail);
+                $("#btime").textbox('setValue',data.btime);
+            }
+        });
+
+    }
+    function uplist(){
+
+        var bid = $("#bid").val();
+        var bname =$("#bname").textbox('getValue');
+        var bnumber = $("#bnumber").textbox('getValue');
+        var bdetail= $("#bdetail").textbox('getValue');
+        var btime = $("#btime").textbox('getValue');
+        var btype = 1;
+        $.ajax({
+            type: 'POST',
+            async: false,
+            dataType: "json",
+            data: {"bid":bid,"bname":bname,"bnumber":bnumber,"bdetail":bdetail,"btime":btime,"btype":btype},
+            url: 'badlist/updatebadlist',
+            success: function (data) {
+                if(data=="success"){
+                    alert("成功");
+                }else{
+                    alert("失败");
+                }
+            }
+        });
+    }
+    function deletes(){
+        var it = $('#tt').datagrid('getSelections');
+        var its = [];
+        $(it).each(function(){
+            its.push(this.iid);
+        });
+        $.ajax({
+            type: 'Get',
+            async: false,
+            dataType: "json",
+            url: 'issuelist/' + its + '/deleteList',
+            success: function (data) {
+                $.messager.show({
+                    title:'提示框',
+                    msg:data,
+                    timeout:3000,
+                    showType:'slide'
+                });
+
+            }
+        });
+
+    }
+
+    function selectes(){
+        var items = $('#tt').datagrid('getSelections');
+        var parentid = [];
+        $(items).each(function(){
+            parentid.push(this.iid);
+        });
+        alert(parentid);
+        $('#dlg73').panel('open');
+        $("#td").datagrid({
+            url:'issuelist/'+parentid+'/getoutlist',
+            toolbar: [{
+                iconCls: 'icon-edit',
+                handler: function(){alert('edit')}
+            },'-',{
+                iconCls: 'icon-help',
+                handler: function(){alert('help')}
+            }],
+            columns:[[
+                {field:'tname',title:'物品名',width:100},
+                {field:'tone',title:'单价',width:100},
+                {field:'tnumber',title:'数量',width:100},
+                {field:'tall',title:'总价',width:100}
+            ]]
+        });
+
+    }
+
+</script>
