@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="UTF-8" xmlns:th="http://www.springframework.org/schema/jdbc">
+<head>
+    <meta charset="UTF-8"/>
+    <title>jar包引入百度编辑器js文件</title>
+    <style>
+        #editor {
+            width: 1024px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+通过 jar包引入百度编辑器js文件<br>
+static 目录下只保留static/ueditor/jsp/config.json 别的都可以删除<br>
+指定serverUrl 和 application.yml中配置的ue.server-url 一致
+<pre>
+   var ue = UE.getEditor('editor', {
+       serverUrl: '/ueditor.do'
+   });
+</pre>
+<div id="editor" type="text/plain"></div>
+<script th:src="@{/webjars/ueditor/ueditor.config.js}"></script>
+<script th:src="@{/webjars/ueditor/ueditor.all.min.js}"></script>
+<script th:src="@{/webjars/ueditor/lang/zh-cn/zh-cn.js}"></script>
+<script>
+    var ue = UE.getEditor('editor', {
+        serverUrl: '/ueditor.do'
+    });
+    var serverUrl = ue.getOpt('serverUrl'); //默认返回：zh-cn
+    console.log(serverUrl)
+</script>
+</body>
+</html>

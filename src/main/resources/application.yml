@@ -21,4 +21,13 @@ server:
       max-wait: 1
       max-idle: 8
       timeout: 0
+ue:
+  config-file: static/ueditor/config.json
+  server-url: /ueditor.do
+  qiniu:
+    accessKey: 8Dw03nJLiST7RvsWtPca1JHDgeu8O0BAWsICDLY_
+    secretKey: LHkGDHPZCyrUk5BxG7vC5sLY9LmDxfZYerdo3W82
+    cdn: http://video.dcssn.com/
+    bucket: video
+    zone: zone0
 
