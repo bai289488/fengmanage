@@ -8,7 +8,7 @@ public class TestGit {
 
     @GetMapping("togit")
     public String toGit(){
-
+        System.out.println("sdfsf");
         return "hello";
     }
 }
